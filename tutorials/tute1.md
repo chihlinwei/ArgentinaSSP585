@@ -1,53 +1,7 @@
 Display seafloor climate change data
 ================
 Chih-Lin Wei
-2024-07-30
-
-# Sealfoor climate change dataset
-
-This data package comprises ensemble model averages of CMIP6 historical
-and future climate change projections for the seafloor within
-Argentina’s Exclusive Economic Zone (EEZ). Yearly means were calculated
-from five climate models: GFDL-ESM4, IPSL-CM6A-LR, MPI-ESM1-2-LR,
-CNRM-ESM2-1, and NorESM2-MM, as part of the Coupled Models
-Intercomparison Project Phase 6 (CMIP6). The ensemble averages were
-computed from 1950 to 2000, 2041 to 2060, and 2081 to 2100. The export
-flux of particulate organic carbon (POC) at the seafloor was derived
-from export production at 100 meters depth (epc100) using the Martin
-curve [(Martin et al.,
-1987)](https://www.sciencedirect.com/science/article/pii/0198014987900860).
-The equation for the export POC flux is given
-by:$Flux = epc100*(depth/export\:depth)^{-0.858}$.
-
-The depth information is based on the
-[etopo2022](https://www.ncei.noaa.gov/products/etopo-global-relief-model)
-dataset, and the export depth was fixed at 100 meters. Additionally, we
-calculated the aragonite saturation state (aragsat) and calcite
-saturation state (calcsat) as the ratio of carbonate concentration (co3)
-to the carbonate concentration in equilibrium with aragonite (co3satarg)
-and calcite (co3satcalc), respectively. It’s important to note that
-co3satarg and aragsat were only available from the GFDL-ESM4 and
-NorESM2-MM models. All CMIP6 data were downloaded from [Earth System
-Grid Federation (ESGF)](https://esgf.llnl.gov/).
-
-We can utilize this dataset to determine the occurrence and impact of
-climate change hazards on deep-sea floors. As biological communities
-adapt to long-term stability or variability in environmental conditions,
-we can establish the historical variability (standard deviation between
-1951-2000) as a reference point. Climate change can then be defined as
-the disparity between future conditions and the historical average.
-Climate change hazard, meanwhile, is the ratio of climate change to
-historical variability. The time of emergence (ToE) of climate change is
-identified as the point when future climate changes exceed twice the
-historical variability. This approach allows us to standardize climate
-change hazards across different variables, using their historical
-variability as a standard unit. For instance, a specific variable’s
-climate hazard could be 10 or 100 times its historical variability.
-
-# Display the data using custom plot function
-
-This vignette provides some simple examples to visualize the data
-layers. First, we should load necessary R packages.
+2024-08-01
 
 ``` r
 library(ArgentinaSSP585)
@@ -59,7 +13,75 @@ library(RColorBrewer)
 library(sf)
 ```
 
-In this analysis, we want to display the ensemble average of historical
+# Sealfoor climate change dataset
+
+This data package contains ensemble model averages of CMIP6 historical
+and future climate change projections for the seafloor within
+Argentina’s Exclusive Economic Zone (EEZ). Yearly means were calculated
+from the outputs of five climate models: GFDL-ESM4, IPSL-CM6A-LR,
+MPI-ESM1-2-LR, CNRM-ESM2-1, and NorESM2-MM as part of the Coupled Models
+Intercomparison Project Phase 6 (CMIP6). From each model output, we
+extracted various parameters such as downward flux of particle organic
+carbon at 100-m depth (epc100), dissolved oxygen concentration (o2), pH
+value (ph), potential temperature (thetao), aragonite concentration
+(arag), calcite concentration (calc), mole concentration of carbonate
+expressed as carbon in sea water (co3), carbonate ion concentration for
+seawater in equilibrium with pure aragonite (co3satarag), and carbonate
+ion concentration for seawater in equilibrium with pure calcite
+(aragsat) for the historical scenario from 1951 to 2000 and Shared
+Socioeconomic Pathways (SSPs) until 2100.
+
+Some parameters were derived from the model outputs as well. For
+instance, the export flux of particulate organic carbon (POC) at the
+seafloor was derived from export production at 100 meters depth (epc100)
+using the Martin curve [(Martin et al.,
+1987)](https://www.sciencedirect.com/science/article/pii/0198014987900860).
+The equation for the export POC flux is given
+by:$Flux = epc100*(depth/export\:depth)^{-0.858}$. The depth information
+is based on the
+[etopo2022](https://www.ncei.noaa.gov/products/etopo-global-relief-model)
+dataset, and the export depth was fixed at 100 meters. Aragonite
+saturation state (aragsat) and calcite saturation state (calcsat) were
+calculated as the ratio of carbonate concentration (co3) to the
+carbonate concentration in equilibrium with aragonite (co3satarag) and
+calcite (co3satcalc), respectively. It’s important to note that
+co3satarag and aragsat were only available from the GFDL-ESM4 and
+NorESM2-MM models. Here is a table showing the native resolution of each
+earth system model in the x, y, and z directions.
+
+| Model         | X   | Y   | Z   |
+|---------------|-----|-----|-----|
+| GFDL-ESM4     | 360 | 180 | 35  |
+| IPSL-CM6A-LR  | 362 | 332 | 75  |
+| MPI-ESM1-2-LR | 256 | 220 | 40  |
+| CNRM-ESM2-1   | 362 | 294 | 75  |
+| NorESM2-MM    | 360 | 385 | 53  |
+
+The yearly outputs of each earth system model were averaged at the
+bottommost grids for the time periods 1951 to 2000, 2041 to 2060, and
+2081 to 2100. The decadal averages of each parameter were then
+interpolated to 0.25 by 0.25-degree grids and computed for ensemble
+averages across the five models. All CMIP6 data were downloaded from
+[Earth System Grid Federation (ESGF)](https://esgf.llnl.gov/).
+
+We can use this dataset to study the occurrence and impact of climate
+change hazards on deep-sea floors. As biological communities adapt to
+long-term stability or variability in environmental conditions, we can
+establish the historical variability (standard deviation between
+1951-2000) as a reference point. Climate change can then be defined as
+the difference between future conditions and the historical average.
+Climate change hazard, on the other hand, is the ratio of climate change
+to historical variability. The time of emergence (ToE) of climate change
+is identified as the point when future climate changes exceed twice the
+historical variability. This approach allows us to standardize climate
+change hazards across different variables, using their historical
+variability as a standard unit. For example, a specific variable’s
+climate hazard could be 10 or 100 times its historical variability.
+
+# Display the data using custom plot function
+
+This vignette provides some simple examples to visualize the data
+layers. First, we want to display the ensemble average of historical
 seafloor projections for export POC flux (epc), dissolved oxygen
 concentration (o2), pH values (ph), and potential temperature (thetao)
 from 1950 to 2000. Let’s break down the steps to construct the map:

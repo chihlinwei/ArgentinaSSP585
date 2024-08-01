@@ -1,0 +1,26 @@
+{
+    "id": "D64D8EE0",
+    "path": "~/GitHub/ArgentinaSSP585/R/cmip6_1950_2000_av.R",
+    "project_path": "R/cmip6_1950_2000_av.R",
+    "type": "r_source",
+    "hash": "1000947504",
+    "contents": "",
+    "dirty": false,
+    "created": 1722502125566.0,
+    "source_on_save": false,
+    "relative_order": 7,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "20,63",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1722502132,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1722502132686,
+    "read_only": false,
+    "read_only_alternatives": []
+}
