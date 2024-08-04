@@ -32,7 +32,7 @@ and cold water corals [(CWC)](http://data.unep-wcmc.org/datasets/3) by
 black dots.
 
 ``` r
-bathy <- etopo2022  %>% mask(eez) %>% as.data.frame(xy = TRUE) %>% na.omit
+bathy <- etopo2022  %>% mask(eez) %>% as.data.frame(xy = TRUE)
 ggplot(bathy) +
       geom_raster(aes(x=x, y=y, fill=-layer))+
       geom_polygon(data=arg, aes(x=X, y=Y, group=PID), fill="bisque2", colour="transparent")+
@@ -42,7 +42,7 @@ ggplot(bathy) +
       geom_sf(data=as(canyon, "sf"), colour="blue")+
       geom_sf(data=as(seamount, "sf"), size=0.5, colour="red")+
       geom_sf(data=as(coral, "sf"), size=0.5, colour="black")+
-      scale_fill_gradientn(colours=terrain.colors(7))+
+      scale_fill_gradientn(colours=terrain.colors(7), na.value="white")+
       scale_x_continuous(expand = expansion(mult = 0))+
       scale_y_continuous(expand = expansion(mult = 0))+
       labs(x=NULL, y=NULL, fill=NULL, title="Depth (m)")+
@@ -65,13 +65,13 @@ same four parameters, including:
 plot_fun <- function(r, vt=names(r), colours=NULL, q_limits=c(0.001, 0.999)){
   
   # Convert raster to data frame and then to list
-  cmip6 <- as.data.frame(r, xy = TRUE) %>% na.omit %>%
+  cmip6 <- as.data.frame(r, xy = TRUE) %>% 
   gather(-x, -y, key = "var", value = "value", factor_key = TRUE)
   cmip6$var <- factor(cmip6$var, labels = vt)
   cmip6_list <- cmip6 %>% group_split(var)
   
   # Depth
-  bathy <- etopo2022%>% as.data.frame(xy = TRUE) %>% na.omit
+  bathy <- etopo2022%>% as.data.frame(xy = TRUE)
   
   # ggolot list
   gg_list = lapply(cmip6_list, function(dat) {
@@ -95,7 +95,7 @@ plot_fun <- function(r, vt=names(r), colours=NULL, q_limits=c(0.001, 0.999)){
       geom_sf(data=as(eez, "sf"), fill="transparent", colour="red")+
       geom_contour(data=bathy, aes(x=x, y=y, z=layer), breaks=-200, linetype=2, colour="gray50")+
       geom_contour(data=bathy, aes(x=x, y=y, z=layer), breaks=-4000, linetype=1, colour="gray50")+
-      scale_fill_gradientn(colours=cols, limits=lims)+
+      scale_fill_gradientn(colours=cols, limits=lims, na.value="white")+
       scale_x_continuous(expand = expansion(mult = 0))+
       scale_y_continuous(expand = expansion(mult = 0))+
       labs(x=NULL, y=NULL, fill=NULL, title=parse(text=dat$var[1] %>% as.character))+

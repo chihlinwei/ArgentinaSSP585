@@ -1,7 +1,7 @@
 Applying seafloor climate change data for habitat suitability modeling
 ================
 Chih-Lin Wei
-2024-07-30
+2024-08-04
 
 ``` r
 library(ArgentinaSSP585)
@@ -80,7 +80,7 @@ ggplot(bathy) +
   geom_contour(data=bathy, aes(x=x, y=y, z=layer), breaks=-4000, linetype=1, colour="gray50")+
   geom_point(data=occ, aes(x=decimalLongitude, y=decimalLatitude), size=0.5)+
   facet_wrap(~Taxa)+
-  scale_fill_gradientn(colours=terrain.colors(7))+
+  scale_fill_gradientn(colours=terrain.colors(7), na.value="white")+
   scale_x_continuous(expand = expansion(mult = 0))+
   scale_y_continuous(expand = expansion(mult = 0))+
   labs(x=NULL, y=NULL, fill="Depth\n(m)")+
@@ -197,7 +197,7 @@ ggplot(dat) +
   geom_contour(data=bathy, aes(x=x, y=y, z=layer), breaks=-4000, linetype=1, colour="gray50")+
   #geom_point(data=occ, aes(x=decimalLongitude, y=decimalLatitude), size=0.2)+
   facet_grid(var~Taxa)+
-  scale_fill_gradientn(colours=brewer.pal(10, 'RdYlBu') %>% rev)+
+  scale_fill_gradientn(colours=brewer.pal(10, 'RdYlBu') %>% rev, na.value="white")+
   scale_x_continuous(expand = expansion(mult = 0))+
   scale_y_continuous(expand = expansion(mult = 0))+
   labs(x=NULL, y=NULL, fill="Habitat\nSuitability")+
