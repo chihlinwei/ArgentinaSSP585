@@ -1,7 +1,7 @@
 Extract seafloor climate change data by polygon, polyline, or points
 ================
 Chih-Lin Wei
-2024-07-30
+2024-08-04
 
 ``` r
 library(ArgentinaSSP585)
@@ -249,16 +249,16 @@ change hazards.
 ``` r
 cum_imp <- function(r){
   # Negative cumulative impact (exposure to climate change hazards for epc<0, o2<0, ph<0, and thetao>0)
-  n2050 <- addLayer(calc(subset(r, 1:3), fun=function(x){x[x>0]<-NA; return(-x)}),
+  neg <- addLayer(calc(subset(r, 1:3), fun=function(x){x[x>0]<-NA; return(-x)}),
                     calc(subset(r, 4), fun=function(x){x[x<0]<-NA; return(x)})
                     ) %>%　overlay(fun=function(x)sum(x, na.rm=T))
 
   # Positive cumulative impact (exposure to climate change hazards for epc>0, o2>0, ph>0, and thetao<0)
-  p2050 <- addLayer(calc(subset(r, 1:3), fun=function(x){x[x<0]<-NA; return(x)}),
+  pos <- addLayer(calc(subset(r, 1:3), fun=function(x){x[x<0]<-NA; return(x)}),
                     calc(subset(r, 4), fun=function(x){x[x>0]<-NA; return(-x)})
                     ) %>%　overlay(fun=function(x)sum(x, na.rm=T))
   
-  out <- addLayer(n2050, p2050)
+  out <- addLayer(neg, pos)
   names(out) <- c("Negative", "Positive")
   out <- mask(out, etopo2022)
   return(out)
