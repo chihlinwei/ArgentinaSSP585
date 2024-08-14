@@ -44,7 +44,7 @@ occ <- rbind(hake[, c(6:7, 21)] %>% cbind(Taxa="Argentine hake"),
              shrimp[, c(6:7, 21)] %>% cbind(Taxa="Argentina red shrimp"), 
              crab[, c(6:7, 21)] %>% cbind(Taxa="Chilean king crab"), 
              skate[, c(6:7, 21)] %>% cbind(Taxa="Shortfin sand skate"), 
-             sponge[, c(2:3, 6)] %>% cbind(Taxa="Demosponge"), 
+             sponge[, c(6:7, 16)] %>% cbind(Taxa="Demosponge"), 
              cwc %>% cbind(Taxa="Coldwater coral")
              )
 ```
@@ -150,3 +150,8 @@ ggplot(dat) +
   theme_bw() %+replace% theme(legend.position = "top", legend.key.width =  unit(1, 'cm'))
 ```
 
+# Excercises
+
+* Download the occurrence data of Southwest Atlantic butterfish (*Stromateus brasiliensis*) and Longtail southern cod (*Patagonotothen ramsayi*) from OBIS and display them on maps.
+
+* Construct species distribution models using historical projection (1950 t0 2000) with Maxent and predict and map the historical and future species habitat suitability from 2041 to 2060 and 2081 to 2100.

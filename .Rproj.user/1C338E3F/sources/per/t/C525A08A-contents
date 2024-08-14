@@ -29,7 +29,7 @@ library(sf)
 In this analysis, we want to extract and display [Argentina EEZ's](https://marineregions.org/gazetteer.php?p=details&id=8466) seafloor climate change data. We can do that by [mask](https://www.rdocumentation.org/packages/raster/versions/3.6-26/topics/mask)ing the [etopo2022](https://www.ncei.noaa.gov/products/etopo-global-relief-model) raster with Argentina EEZ. We can see that the Argentina EEZ consists of continental shelf (0-200 m) and continental slope (200-4000 m). The shelf is indicated by gray dashed contour lines and the slope by gray solid contour lines. Additionally, submarine canyons [(Harris and Whitway, 2011)](https://doi.org/10.1016/j.margeo.2011.05.008) are indicated by blue solid lines, seamounts [(Kim and Wessel, 2011)](https://doi.org/10.1111/j.1365-246X.2011.05076.x) by red dots, and cold water corals [(CWC)](http://data.unep-wcmc.org/datasets/3) by black dots.
 
 ```{r, fig.width=4, fig.height=6}
-bathy <- etopo2022  %>% mask(eez) %>% as.data.frame(xy = TRUE) %>% na.omit
+bathy <- etopo2022  %>% mask(eez) %>% as.data.frame(xy = TRUE)
 ggplot(bathy) +
       geom_raster(aes(x=x, y=y, fill=-layer))+
       geom_polygon(data=arg, aes(x=X, y=Y, group=PID), fill="bisque2", colour="transparent")+
@@ -39,7 +39,7 @@ ggplot(bathy) +
       geom_sf(data=as(canyon, "sf"), colour="blue")+
       geom_sf(data=as(seamount, "sf"), size=0.5, colour="red")+
       geom_sf(data=as(coral, "sf"), size=0.5, colour="black")+
-      scale_fill_gradientn(colours=terrain.colors(7))+
+      scale_fill_gradientn(colours=terrain.colors(7), na.value="white")+
       scale_x_continuous(expand = expansion(mult = 0))+
       scale_y_continuous(expand = expansion(mult = 0))+
       labs(x=NULL, y=NULL, fill=NULL, title="Depth (m)")+
@@ -57,13 +57,13 @@ We can use the same [ggplot](https://ggplot2.tidyverse.org/) wrap function to ge
 plot_fun <- function(r, vt=names(r), colours=NULL, q_limits=c(0.001, 0.999)){
   
   # Convert raster to data frame and then to list
-  cmip6 <- as.data.frame(r, xy = TRUE) %>% na.omit %>%
+  cmip6 <- as.data.frame(r, xy = TRUE) %>% 
   gather(-x, -y, key = "var", value = "value", factor_key = TRUE)
   cmip6$var <- factor(cmip6$var, labels = vt)
   cmip6_list <- cmip6 %>% group_split(var)
   
   # Depth
-  bathy <- etopo2022%>% as.data.frame(xy = TRUE) %>% na.omit
+  bathy <- etopo2022%>% as.data.frame(xy = TRUE)
   
   # ggolot list
   gg_list = lapply(cmip6_list, function(dat) {
@@ -87,7 +87,7 @@ plot_fun <- function(r, vt=names(r), colours=NULL, q_limits=c(0.001, 0.999)){
       geom_sf(data=as(eez, "sf"), fill="transparent", colour="red")+
       geom_contour(data=bathy, aes(x=x, y=y, z=layer), breaks=-200, linetype=2, colour="gray50")+
       geom_contour(data=bathy, aes(x=x, y=y, z=layer), breaks=-4000, linetype=1, colour="gray50")+
-      scale_fill_gradientn(colours=cols, limits=lims)+
+      scale_fill_gradientn(colours=cols, limits=lims, na.value="white")+
       scale_x_continuous(expand = expansion(mult = 0))+
       scale_y_continuous(expand = expansion(mult = 0))+
       labs(x=NULL, y=NULL, fill=NULL, title=parse(text=dat$var[1] %>% as.character))+
@@ -203,16 +203,16 @@ Another application involves calculating the cumulative impacts of climate chang
 ```{r}
 cum_imp <- function(r){
   # Negative cumulative impact (exposure to climate change hazards for epc<0, o2<0, ph<0, and thetao>0)
-  n2050 <- addLayer(calc(subset(r, 1:3), fun=function(x){x[x>0]<-NA; return(-x)}),
+  neg <- addLayer(calc(subset(r, 1:3), fun=function(x){x[x>0]<-NA; return(-x)}),
                     calc(subset(r, 4), fun=function(x){x[x<0]<-NA; return(x)})
                     ) %>%　overlay(fun=function(x)sum(x, na.rm=T))
 
   # Positive cumulative impact (exposure to climate change hazards for epc>0, o2>0, ph>0, and thetao<0)
-  p2050 <- addLayer(calc(subset(r, 1:3), fun=function(x){x[x<0]<-NA; return(x)}),
+  pos <- addLayer(calc(subset(r, 1:3), fun=function(x){x[x<0]<-NA; return(x)}),
                     calc(subset(r, 4), fun=function(x){x[x>0]<-NA; return(-x)})
                     ) %>%　overlay(fun=function(x)sum(x, na.rm=T))
   
-  out <- addLayer(n2050, p2050)
+  out <- addLayer(neg, pos)
   names(out) <- c("Negative", "Positive")
   out <- mask(out, etopo2022)
   return(out)
@@ -274,3 +274,11 @@ ggplot(data=out)+
   facet_wrap(~var, scales="free", labeller=label_parsed)+
   labs(y="Cumulative Climate Change Impact")
 ```
+
+# Excercises
+
+* Display climate change hazards from 2081 to 2100 for Argentina EEZ, submarine canyons, seamounts, and cold water corals.
+
+* Display cumulative impacts based on climate change hazards from 2081 to 2100 for Argentina EEZ, submarine canyons, seamounts, and cold water corals.
+
+* Display cumulative impacts based on climate velocity magnitudes from 2081 to 2100 for Argentina EEZ, submarine canyons, seamounts, and cold water corals.

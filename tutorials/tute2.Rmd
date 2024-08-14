@@ -274,3 +274,11 @@ ggplot(data=out)+
   facet_wrap(~var, scales="free", labeller=label_parsed)+
   labs(y="Cumulative Climate Change Impact")
 ```
+
+# Excercises
+
+* Display climate change hazards from 2081 to 2100 for Argentina EEZ, submarine canyons, seamounts, and cold water corals.
+
+* Display cumulative impacts based on climate change hazards from 2081 to 2100 for Argentina EEZ, submarine canyons, seamounts, and cold water corals.
+
+* Display cumulative impacts based on climate velocity magnitudes from 2081 to 2100 for Argentina EEZ, submarine canyons, seamounts, and cold water corals.

@@ -3,7 +3,7 @@
     "path": "~/GitHub/ArgentinaSSP585/tutorials/tute2.Rmd",
     "project_path": "tutorials/tute2.Rmd",
     "type": "r_markdown",
-    "hash": "40246593",
+    "hash": "1959890782",
     "contents": "",
     "dirty": false,
     "created": 1722326454645.0,
@@ -12,15 +12,15 @@
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "20,18",
-        "scrollLine": "0"
+        "cursorPosition": "283,2",
+        "scrollLine": "260"
     },
     "folds": "",
-    "lastKnownWriteTime": 1722326596,
+    "lastKnownWriteTime": 1723629918,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1722326596055,
+    "last_content_update": 1723629918473,
     "read_only": false,
     "read_only_alternatives": []
 }

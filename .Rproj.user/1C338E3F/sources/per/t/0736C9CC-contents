@@ -63,14 +63,14 @@ help(etopo2022)
 There is an example code within the documentation, but we can also draw the bathymetric map here.
 
 ```{r, fig.width=3, fig.height=5}
-bathy <- etopo2022%>% as.data.frame(xy = TRUE) %>% na.omit
+bathy <- etopo2022%>% as.data.frame(xy = TRUE)
 ggplot(bathy) +
       geom_raster(aes(x=x, y=y, fill=-layer))+
       geom_polygon(data=arg, aes(x=X, y=Y, group=PID), fill="bisque2", colour="transparent")+
       geom_sf(data=as(eez, "sf"), fill="transparent", colour="red")+
       geom_contour(data=bathy, aes(x=x, y=y, z=layer), breaks=-200, linetype=2, colour="gray50")+
       geom_contour(data=bathy, aes(x=x, y=y, z=layer), breaks=-4000, linetype=1, colour="gray50")+
-      scale_fill_gradientn(colours=terrain.colors(7))+
+      scale_fill_gradientn(colours=terrain.colors(7), na.value="white")+
       scale_x_continuous(expand = expansion(mult = 0))+
       scale_y_continuous(expand = expansion(mult = 0))+
       labs(x=NULL, y=NULL, fill=NULL, title="Depth (m)")+
@@ -93,13 +93,13 @@ Finally, we wrap the ggplot list using [wrap_plots](https://patchwork.data-imagi
 plot_fun <- function(r, vt=names(r), colours=NULL, q_limits=c(0.001, 0.999)){
   
   # Convert raster to data frame and then to list
-  cmip6 <- as.data.frame(r, xy = TRUE) %>% na.omit %>%
+  cmip6 <- as.data.frame(r, xy = TRUE) %>%
   gather(-x, -y, key = "var", value = "value", factor_key = TRUE)
   cmip6$var <- factor(cmip6$var, labels = vt)
   cmip6_list <- cmip6 %>% group_split(var)
   
   # Depth
-  bathy <- etopo2022%>% as.data.frame(xy = TRUE) %>% na.omit
+  bathy <- etopo2022%>% as.data.frame(xy = TRUE)
   
   # ggolot list
   gg_list = lapply(cmip6_list, function(dat) {
@@ -123,7 +123,7 @@ plot_fun <- function(r, vt=names(r), colours=NULL, q_limits=c(0.001, 0.999)){
       geom_sf(data=as(eez, "sf"), fill="transparent", colour="red")+
       geom_contour(data=bathy, aes(x=x, y=y, z=layer), breaks=-200, linetype=2, colour="gray50")+
       geom_contour(data=bathy, aes(x=x, y=y, z=layer), breaks=-4000, linetype=1, colour="gray50")+
-      scale_fill_gradientn(colours=cols, limits=lims)+
+      scale_fill_gradientn(colours=cols, limits=lims, na.value="white")+
       scale_x_continuous(expand = expansion(mult = 0))+
       scale_y_continuous(expand = expansion(mult = 0))+
       labs(x=NULL, y=NULL, fill=NULL, title=parse(text=dat$var[1] %>% as.character))+
@@ -203,7 +203,7 @@ plot_fun(r=cmip6_extoe_constant %>% subset(1:4),
 We can combine the four panels above to demonstrate the years when climate changes for export POC flux, dissolved oxygen, pH, and temperature simultaneously exceed twice the historical variability.
 
 ```{r, fig.width=3, fig.height=5}
-all <- overlay(subset(cmip6_extoe_constant, 1:4), fun=max) %>% mask(eez)
+all <- overlay(subset(cmip6_extoe_constant, 1:4), fun=max)
 names(all) <- "cmip6_extoe_constant"
 plot_fun(r=all, vt="When~climate~change>2*sigma", colours=brewer.pal(10, 'RdYlBu'), q_limits = c(0, 1))
 ```
@@ -215,16 +215,16 @@ Another application involves calculating the cumulative impacts of climate chang
 ```{r}
 cum_imp <- function(r){
   # Negative cumulative impact (exposure to climate change hazards for epc<0, o2<0, ph<0, and thetao>0)
-  n2050 <- addLayer(calc(subset(r, 1:3), fun=function(x){x[x>0]<-NA; return(-x)}),
+  neg <- addLayer(calc(subset(r, 1:3), fun=function(x){x[x>0]<-NA; return(-x)}),
                     calc(subset(r, 4), fun=function(x){x[x<0]<-NA; return(x)})
                     ) %>%　overlay(fun=function(x)sum(x, na.rm=T))
 
   # Positive cumulative impact (exposure to climate change hazards for epc>0, o2>0, ph>0, and thetao<0)
-  p2050 <- addLayer(calc(subset(r, 1:3), fun=function(x){x[x<0]<-NA; return(x)}),
+  pos <- addLayer(calc(subset(r, 1:3), fun=function(x){x[x<0]<-NA; return(x)}),
                     calc(subset(r, 4), fun=function(x){x[x>0]<-NA; return(-x)})
                     ) %>%　overlay(fun=function(x)sum(x, na.rm=T))
   
-  out <- addLayer(n2050, p2050)
+  out <- addLayer(neg, pos)
   names(out) <- c("Negative", "Positive")
   out <- mask(out, etopo2022)
   return(out)
@@ -256,3 +256,17 @@ plot_fun(r=cmip6_2041_2060_voccMeg %>% cum_imp,
          vt=c("Cumul.~negative~impact~(km~yr^-1)", "Cumul.~positivce~impact~(km~yr^-1)"),
          q_limits = c(0, 0.99))
 ```
+
+# Excercises
+
+* Display the average seafloor climate projections of export POC flux (epc), dissolved oxygen concentration (o2), pH values (ph), and potential temperature (thetao) from 2081 to 2100.
+
+* Display the average seafloor climate changes of export POC flux (epc), dissolved oxygen concentration (o2), pH values (ph), and potential temperature (thetao) between 1950 to 2000 and 2081 to 2100.
+
+* Display the average climate change hazards of export POC flux (epc), dissolved oxygen concentration (o2), pH values (ph), and potential temperature (thetao) from 2081 to 2100.
+
+* Display the cumulative impacts based on climate change hazards (or impacts) of export POC flux (epc), dissolved oxygen concentration (o2), pH values (ph), and potential temperature (thetao) from 2081 to 2100.
+
+* Display the average seafloor gradient-based climate velocity magnitudes from 2081 to 2100.
+
+* Display the cumulative impacts based climate velocity magnitudes of export POC flux (epc), dissolved oxygen concentration (o2), pH values (ph), and potential temperature (thetao) from 2081 to 2100.

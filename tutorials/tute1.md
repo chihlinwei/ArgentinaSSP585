@@ -1,7 +1,7 @@
 Display seafloor climate change data
 ================
 Chih-Lin Wei
-2024-08-04
+2024-08-14
 
 ``` r
 library(ArgentinaSSP585)
@@ -377,3 +377,29 @@ plot_fun(r=cmip6_2041_2060_voccMeg %>% cum_imp,
 ```
 
 ![](tute1_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+
+# Excercises
+
+- Display the average seafloor climate projections of export POC flux
+  (epc), dissolved oxygen concentration (o2), pH values (ph), and
+  potential temperature (thetao) from 2081 to 2100.
+
+- Display the average seafloor climate changes of export POC flux (epc),
+  dissolved oxygen concentration (o2), pH values (ph), and potential
+  temperature (thetao) between 1950 to 2000 and 2081 to 2100.
+
+- Display the average climate change hazards of export POC flux (epc),
+  dissolved oxygen concentration (o2), pH values (ph), and potential
+  temperature (thetao) from 2081 to 2100.
+
+- Display the cumulative impacts based on climate change hazards (or
+  impacts) of export POC flux (epc), dissolved oxygen concentration
+  (o2), pH values (ph), and potential temperature (thetao) from 2081 to
+  2100.
+
+- Display the average seafloor gradient-based climate velocity
+  magnitudes from 2081 to 2100.
+
+- Display the cumulative impacts based climate velocity magnitudes of
+  export POC flux (epc), dissolved oxygen concentration (o2), pH values
+  (ph), and potential temperature (thetao) from 2081 to 2100.
